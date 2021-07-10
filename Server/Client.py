@@ -44,9 +44,12 @@ class Client:
         self.clientName = str(self.connection.recv(512), "utf-8")
         x = {"N": self.name}
         self.connection.send(pickle.dumps(x))
-        self.ping()
+        ping = self.ping()
+        print(f"@Client connected with Server at : {self.connection.getsockname()} \n"
+              f"\t@{self.name} -> ping {ping}ms")
 
-    def openLobby(self, val) -> bool: # money, smallBlind, bigBlind, playerNum
+    def openLobby(self, val) -> bool:  # money, smallBlind, bigBlind, playerNum
+        print("openLob")
         self.send(Client._openLobby, val)
         return self.getData()
 
@@ -96,7 +99,7 @@ class Client:
         x = {"command": command,
              "val": val}
         try:
-            self.connection.send(bytes(str(pickle.dumps(x), "utf-8")))
+            self.connection.send(pickle.dumps(x))
         except Exception as e:
             print(f"{'=' * 100}\n@ClientConnection name : {self.name}, {self.clientName} : ERROR at "
                   f"{datetime.now().strftime(TIME_FORMAT)}"
@@ -104,3 +107,27 @@ class Client:
 
     def getData(self):
         return pickle.loads(self.connection.recv(1024))
+
+
+if __name__ == '__main__':
+    c = Client("Markin", ("127.0.0.1", 62435))
+    c.firstConnection()
+
+    c.openLobby({"name": "test", "money": "10K", "smallBlind": "2.5t", "bigBlind": "5t", "playerNum": 10})
+    c.openLobby({"name": "test1", "money": "10K", "smallBlind": "2.5t", "bigBlind": "5t", "playerNum": 10})
+    c.openLobby({"name": "test2", "money": "10K", "smallBlind": "2.5t", "bigBlind": "5t", "playerNum": 10})
+    c.openLobby({"name": "test3", "money": "10K", "smallBlind": "2.5t", "bigBlind": "5t", "playerNum": 10})
+    c.openLobby({"name": "te5s4t", "money": "10K", "smallBlind": "2.5t", "bigBlind": "5t", "playerNum": 10})
+    c.openLobby({"name": "tes5235t", "money": "10K", "smallBlind": "2.5t", "bigBlind": "5t", "playerNum": 10})
+    c.openLobby({"name": "tes123t", "money": "10K", "smallBlind": "2.5t", "bigBlind": "5t", "playerNum": 10})
+    c.openLobby({"name": "tes132t", "money": "10K", "smallBlind": "2.5t", "bigBlind": "5t", "playerNum": 10})
+
+    print("getLobbyList-> ", c.getLobbyList())
+    print("joinLobby-> ", c.joinLobby("dasda"))
+    print("joinLobby-> ", c.joinLobby("tes132t"))
+    print("getLobbyList-> ", c.getLobbyList())
+    print("OnTurn-> ", c.OnTurn())
+    print("getServerPool-> ", c.getServerPool())
+
+    while True:
+        pass
