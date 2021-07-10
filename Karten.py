@@ -4,6 +4,7 @@ import random as rand
 
 import math as m
 
+
 class Cards:
 
     def __init__(self, Card, W, H):

@@ -1,5 +1,15 @@
 import socket
 from typing import List
+import string
+import threading
+
+
+def decode2(data):
+    return data
+
+
+def encode1(data):
+    return data
 
 
 class Client:
@@ -18,13 +28,13 @@ class Client:
     def OnTurn(self) -> bool:
         pass
 
-    def getLobbyist(self) -> List[str]:
+    def getLobbyList(self) -> List[str]:
         pass
 
     def ping(self) -> float:
         pass
 
-    def sendTurn(self, commitment: dict):  # {name, commitment # 0 = hold -1 = fold}
+    def sendTurn(self, commitment: int):  # 0 = hold -1 = fold -2 = allin}
         pass
 
     def getPlayerCommitment(self) -> (bool, int, int):
@@ -50,7 +60,8 @@ class Client:
             "winner": ...,
             "ifWinner": False,
             "onwCards": [...],
-            "name": self.name
+            "name": self.name,
+            "pl": [1200, 120, ]
         }
         pass
 
