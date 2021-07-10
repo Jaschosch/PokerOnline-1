@@ -40,7 +40,7 @@ class Client:
     def getPlayerCommitment(self) -> (bool, int, int):
         pass
 
-    def setLobbyParameter(self, money, smallBlind, bigBlind, playerNum, BotNum) -> str:
+    def setLobbyParameter(self, money, smallBlind, bigBlind, playerNum) -> str:
         pass
 
     def playAgain(self) -> bool:
@@ -54,7 +54,7 @@ class Client:
 
     def getServerPool(self) -> dict:
         return {
-            "OpenCards": 0,
+            "OpenCards": [45, 60],
             "OpenCardsType": ...,
             "moneyPool": ...,
             "winner": ...,

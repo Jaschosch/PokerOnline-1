@@ -13,6 +13,19 @@ class ClientConnection:
         self.clientName = str(clientAddress[0]) + ':' + str(clientAddress[1])
         self.game = None
         self.lobby = None
+        self.localPool = {}
+
+    def commitment(self):
+        pass
+
+    def connection(self):
+        pass
+
+    def send(self):
+        pass
+
+    def handler(self):
+        pass
 
 
 class Lobby:
@@ -28,9 +41,11 @@ class Lobby:
         self.onTurn = -1
         self.acPlayers = -1
         self.Vars = -0
+        self.globalPool = {}
+        self.maxMoneyInRound = 0
 
-    def setParm(self, money, smallBlind, bigBlind, playerNum, BotNum):
-        self.money, self.smallBlind, self.bigBlind, self.playerNum, self.BotNum = money, smallBlind, bigBlind, playerNum, BotNum
+    def setParm(self, money, smallBlind, bigBlind, playerNum):
+        self.money, self.smallBlind, self.bigBlind, self.playerNum = money, smallBlind, bigBlind, playerNum
 
     def addPlayer(self, player: ClientConnection):
         self.PlayerList.append(player)
@@ -41,13 +56,30 @@ class Lobby:
     def endGame(self):
         pass
 
-    def getInfos(self):
+    def openNextCard(self):
         pass
 
-    def sendInfos(self):
+    def setCards(self):
+        pass
+
+    def NextPlayer(self):
+        pass
+
+    def showdown(self):
         pass
 
     def Handler(self):
+        #
+        #
+        #
+        self.maxMoneyInRound += self.NextPlayer()
+        #
+        #
+        #
+        #
+        #
+        #
+        #
         pass
 
 
