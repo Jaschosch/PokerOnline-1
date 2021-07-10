@@ -1,6 +1,7 @@
 import socket
 import threading
 from datetime import datetime
+import pickle
 
 
 class ClientConnection:
@@ -13,74 +14,130 @@ class ClientConnection:
         self.lobby = None
         self.playAgain = False
         self.localPool = {}
-        self.onTurn = False
+        self.onTurn_val = False
+        self.online = False
 
     def startHandler(self):
-        pass
+        try:
+            self.get_name()
+            while self.online:
+                self.connection()
+        except Exception as e:
+            print(f"{'=' * 100}\n@ClientConnection name : {self.name}, {self.clientName} : ERROR at "
+                  f"{datetime.now().strftime(TIME_FORMAT)}"
+                  f"\n \n \t {e} \n{'=' * 100}")
+            del self
 
-    def commitment(self):
+    def commitment(self, val):
         pass
 
     def connection(self):
 
         def joinLobby(name):
+            x = True
             for lobby in Lobby_list:
                 if lobby.name == name:
-                    # TODO confirm
                     self.lobby = lobby
                     self.lobby.addPlayer(self)
+                    self.send("confirm")
+                    x = False
+            if x:
+                self.send("not")
 
         def getLobbyList():
             lobbies = []
             for lobby in Lobby_list:
                 lobbies.append(lobby.name)
-            # TODO send lobbies
+            self.send(lobbies)
 
         def ping():
-            pass
-            # TODO send Null
+            self.send("pong")
 
         def disconnect():
             for lobby in Lobby_list:
                 if self in lobby.PlayerList:
                     lobby.delPlayer(self)
-                    self.clientSocket.close()
-                    del self
+            self.clientSocket.close()
+            del self
 
         def leveLobby():
             for lobby in Lobby_list:
                 if self in lobby.PlayerList:
                     lobby.delPlayer(self)
+            self.send("don")
 
         def sendServerPool():
-            # TODO send Pool
-            pass
+            self.send(self.localPool)
 
         def OnTurn():
-            # TODO send self.onTurn
-            pass
+            self.send(self.onTurn_val)
 
-        def sendTurn():
-            # TODO Bliat
-            pass
+        def sendInvalid():
+            self.send("ERROR Invalid key")
 
-        # TODO get dict from client
-        # {command...} openLobby joinLobby getLobbyList disconnect getServerPool leveLobby
-        # OnTurn sendTurn
-        data = {"command": "openLobby"}
+        # {command...}
+
+        _openLobby = 17841
+        _joinLobby = 5114
+        _getLobbyList = 1338
+        _disconnect = 2116
+        _getServerPool = 8167
+        _leveLobby = 2641
+        _OnTurn = 1651
+        _commitment = 1646
+        _ping = 0
+
+        # data = {"command": 0, "val": None}
+
+        try:
+            data = pickle.loads(self.clientSocket.recv(1024))
+            if data["command"] == _ping:
+                ping()
+            if data["command"] == _commitment:
+                self.commitment(data["val"])
+            if data["command"] == _openLobby:
+                self.lobby = openLobby(data["val"]["name"], data["val"]["money"], data["val"]["smallBlind"],
+                                       data["val"]["bigBlind"], data["val"]["playerNum"], self)
+                self.send(True)
+            if data["command"] == _joinLobby:
+                joinLobby(data["val"])
+            if data["command"] == _getLobbyList:
+                getLobbyList()
+            if data["command"] == _disconnect:
+                disconnect()
+            if data["command"] == _getServerPool:
+                sendServerPool()
+            if data["command"] == _leveLobby:
+                leveLobby()
+            if data["command"] == _OnTurn:
+                OnTurn()
+            else:
+                sendInvalid()
+        except Exception as e:
+            print(f"{'='*100}\n@ClientConnection name : {self.name}, {self.clientName} : ERROR at "
+                  f"{datetime.now().strftime(TIME_FORMAT)}"
+                  f"\n \n \t {e} \n{'='*100}")
+            del self
         pass
 
-    def send(self):
-        pass
+    def send(self, data):
+        try:
+            self.clientSocket.send(bytes(str(pickle.dumps(data), "utf-8")))
+        except Exception as e:
+            print(f"{'='*100}\n@ClientConnection name : {self.name}, {self.clientName} : ERROR at "
+                  f"{datetime.now().strftime(TIME_FORMAT)}"
+                  f"\n \n \t {e} \n{'='*100}")
 
-    def onTure(self):
-        pass
+    def onTure(self, turn):
+        self.onTurn_val = turn
 
     def showdown(self, midCards, Winner):
         pass
 
     def get_name(self):
-        pass
+        self.name = eval(str(self.clientSocket.recv(1024), "utf-8"))["N"]
+        self.online = True
+        print(f"@ClientConnection name : {self.name}, {self.clientName}")
 
 
 class Lobby:
@@ -144,7 +201,6 @@ class Lobby:
             elif _ == Ingame[-1]:
 
                 if check == len(Ingame):
-
                     check = 1
 
                 if len(self.globalPool['OpenedCards']) == 5:
@@ -162,7 +218,6 @@ class Lobby:
                 else:
 
                     for __ in range(3):
-
                         self.globalPool['OpenedCards'].append(stapel[0])
 
                         del stapel[0]
@@ -172,7 +227,7 @@ def openServer() -> socket:
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind((HOST, PORT))
     sock.listen(0)
-    print(f"@SERVER :: online {datetime.now().strftime('%Y.%m.%d -> %H:%M:%S')}")
+    print(f"@SERVER :: online {datetime.now().strftime(TIME_FORMAT)}")
 
 
 def versionControl():
@@ -193,12 +248,6 @@ def connections_handler(server: socket.socket):
         threading.Thread(target=clientConnection, args=(clientSocket, clientAddress)).start()
 
 
-def clientConnection(clientSocket, clientAddress):
-    clientClass = ClientConnection(clientSocket, clientAddress)
-    clientClass.get_name()
-    clientClass.startHandler()
-
-
 def openLobby(name, money, smallBlind, bigBlind, playerNum, player0):
     lobby = Lobby(name)
     lobby.setParm(money, smallBlind, bigBlind, playerNum)
@@ -207,11 +256,15 @@ def openLobby(name, money, smallBlind, bigBlind, playerNum, player0):
     return lobby
 
 
+def clientConnection(clientSocket, clientAddress):
+    clientClass = ClientConnection(clientSocket, clientAddress)
+    clientClass.startHandler()
+
+
 if __name__ == '__main__':
+    TIME_FORMAT = '%Y.%m.%d -> %H:%M:%S'
     Lobby_list = []
     HOST = ""
     PORT = 62435
     VERSION = "0.0"
-    rMODES = ["C", "L", "G", "P"]  # C -> connect | L -> Lobby | G -> Gema | P -> Ping
     Update = False
-
