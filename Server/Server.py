@@ -96,7 +96,10 @@ class Lobby:
         self.onTurn = -1
         self.acPlayers = 0
         self.Vars = -0
-        self.globalPool = {}
+        self.globalPool = {
+            'OpenedCards': [],
+            'Pot': []
+        }
         self.maxMoneyInRound = 0
 
     def setParm(self, money, smallBlind, bigBlind, playerNum):
@@ -129,8 +132,40 @@ class Lobby:
         pass
 
     def Handler(self):
+
         self.maxMoneyInRound += self.NextPlayer()
-        pass
+
+        for _ in Ingame:
+
+            if self.globalPool['OpenedCards'][_] != self.maxMoneyInRound:
+
+                break
+
+            elif _ == Ingame[-1]:
+
+                if check == len(Ingame):
+
+                    check = 1
+
+                if len(self.globalPool['OpenedCards']) == 5:
+
+                    Ingame = Ingame + AllIn
+
+                    Showdown = showdown(Ingame)
+
+                elif len(self.globalPool['OpenedCards']) in range(3, 5):
+
+                    self.globalPool['OpenedCards'].append(stapel[0])
+
+                    del stapel[0]
+
+                else:
+
+                    for __ in range(3):
+
+                        self.globalPool['OpenedCards'].append(stapel[0])
+
+                        del stapel[0]
 
 
 def openServer() -> socket:

@@ -10,6 +10,8 @@ from copy import *
 
 from Karten import Cards
 
+from Server import Client
+
 
 def Int(x):
 
@@ -65,39 +67,20 @@ def Chips(P, Points, Chip):
                                Points[3][1] + _ * m.cos(Points[4]) * m.ceil(dx / 25) - dy / 2))
 
 
-def KartenAusteilen(Player, Mitte, stapel, Karten, SBlind, BBlind):
+def Handkarten(Player, Karten, client):
 
-    for _ in range(len(Player)):
+    Player[0][2] = client.getServerPool()["Handkarten"]
 
-        Player[_][2] = [stapel[0], stapel[1]]
+    for __ in range(2):
 
-        for __ in range(2): del stapel[0]
+        Karten[Player[0][2][__]] = Cards(['karo-2', 'karo-3', 'karo-4', 'karo-5', 'karo-6', 'karo-7', 'karo-8', 'karo-9', 'karo-10', 'karo-bube', 'karo-dame', 'karo-koenig', 'karo-ass',
+                                          'herz-2', 'herz-3', 'herz-4', 'herz-5', 'herz-6', 'herz-7', 'herz-8', 'herz-9', 'herz-10', 'herz-bube', 'herz-dame', 'herz-koenig', 'herz-ass',
+                                          'pik-2', 'pik-3', 'pik-4', 'pik-5', 'pik-6', 'pik-7', 'pik-8', 'pik-9', 'pik-10', 'pik-bube', 'pik-dame', 'pik-koenig', 'pik-ass',
+                                          'kreuz-2', 'kreuz-3', 'kreuz-4', 'kreuz-5', 'kreuz-6', 'kreuz-7', 'kreuz-8', 'kreuz-9', 'kreuz-10', 'kreuz-bube', 'kreuz-dame', 'kreuz-koenig', 'kreuz-ass'][Player[0][2][__]], int(252 / len(Player) + 42), int(357 / len(Player) + 60))
 
-        for __ in range(2):
+        Karten[Player[0][2][__]].Hand(2, __ + 1, [w / 2, h], m.degrees(- m.pi))
 
-            Karten[Player[_][2][__]] = Cards(['karo-2', 'karo-3', 'karo-4', 'karo-5', 'karo-6', 'karo-7', 'karo-8', 'karo-9', 'karo-10', 'karo-bube', 'karo-dame', 'karo-koenig', 'karo-ass',
-                                              'herz-2', 'herz-3', 'herz-4', 'herz-5', 'herz-6', 'herz-7', 'herz-8', 'herz-9', 'herz-10', 'herz-bube', 'herz-dame', 'herz-koenig', 'herz-ass',
-                                              'pik-2', 'pik-3', 'pik-4', 'pik-5', 'pik-6', 'pik-7', 'pik-8', 'pik-9', 'pik-10', 'pik-bube', 'pik-dame', 'pik-koenig', 'pik-ass',
-                                              'kreuz-2', 'kreuz-3', 'kreuz-4', 'kreuz-5', 'kreuz-6', 'kreuz-7', 'kreuz-8', 'kreuz-9', 'kreuz-10', 'kreuz-bube', 'kreuz-dame', 'kreuz-koenig', 'kreuz-ass'][Player[_][2][__]], int(252 / len(Player) + 42), int(357 / len(Player) + 60))
-
-            Karten[Player[_][2][__]].Hand(2, __ + 1, [w / 2 + m.sin(-_ * 2 * m.pi / len(Player)) * h / 2, h / 2 + m.cos(-_ * 2 * m.pi / len(Player)) * h / 2], m.degrees(-_ * 2 * m.pi / len(Player) - m.pi))
-
-    for _ in range(len(stapel)):
-
-        Karten[sorted(stapel)[_]].Scale(63, 89)
-
-        Karten[sorted(stapel)[_]].Stapel((w / 2 - 2 * (Karten[sorted(stapel)[_]].width + 2), h / 2), _, len(stapel))
-
-    Player[SBlind[0]][1], Mitte[1][SBlind[0]] = Pay(Player[SBlind[0]][1], Mitte[1][SBlind[0]], SBlind[1])
-
-    Player[BBlind[0]][1], Mitte[1][BBlind[0]] = Pay(Player[BBlind[0]][1], Mitte[1][BBlind[0]], BBlind[1])
-
-    return Player, Mitte, stapel, Karten
-
-
-def Botcheck():
-
-    pass
+    return Player, Karten
 
 
 def Pay(From, To, Much):
@@ -109,7 +92,7 @@ def Pay(From, To, Much):
     return From, To
 
 
-def Winner(P, SBlind, BBlind, Players, B, M):
+def Winner(P, Players, B, M):
 
     run = True
 
@@ -144,11 +127,7 @@ def Winner(P, SBlind, BBlind, Players, B, M):
 
                 if pg.Rect(Box[1]).collidepoint(event.pos):
 
-                    SBlind[0] = 0
-
-                    BBlind[0] = 1
-
-                    Game(Players, B, SBlind, BBlind, M)
+                    Game(Players, B, M)
 
                     return False
 
@@ -207,6 +186,7 @@ def Winner(P, SBlind, BBlind, Players, B, M):
         if Color[0] and not Color[1] and Color[2] == 255:
 
             Color[0] -= 1
+
 
 def Showdown(K, M, Player, Mitte, I):
 
@@ -368,6 +348,8 @@ def Showdown(K, M, Player, Mitte, I):
 
             del I[1][0]
 
+    for _ in Player: K[Player[_][2][0]].open, K[Player[_][2][0]].open = 1, 1
+
     while True:
 
         for _ in range(len(Player)):
@@ -423,7 +405,8 @@ def Showdown(K, M, Player, Mitte, I):
 
                 return I[0]
 
-def Reset(Mitte, Player, Karten, a, SBlind, BBlind):
+
+def Reset(Mitte, Player, Karten, a):
 
     b = 0
 
@@ -459,25 +442,20 @@ def Reset(Mitte, Player, Karten, a, SBlind, BBlind):
 
     rand.shuffle(stapel)
 
-    SBlind[0] = (SBlind[0] + 1) % len(Player)
-
-    BBlind[0] = (BBlind[0] + 1) % len(Player)
-
-    Turn = (BBlind[0] + 1) % len(Player)
-
-    Player, Mitte, stapel, Karten = KartenAusteilen(Player, Mitte, stapel, Karten, SBlind, BBlind)
+    Player, Mitte, stapel, Karten = KartenAusteilen(Player, Mitte, stapel, Karten)
 
     Raise = BBlind[1]
 
-    return Player, Karten, Mitte, stapel, SBlind, BBlind, Turn, Raise, Ingame, AllIn
+    return Player, Karten, Mitte, stapel, Turn, Raise, Ingame, AllIn
 
-def Test(Ingame, AllIn, Player, Mitte, Karten, SBlind, BBlind, stapel, Chip, SChip, BP, SBP, Turn, run, M):
+
+def Test(Ingame, AllIn, Player, Mitte, Karten, stapel, Chip, SChip, BP, SBP, Turn, run, M):
 #Nur noch ein Spieler übrig
     if len(Ingame) + len(AllIn) == 1:
 
         Ingame = Ingame + AllIn
 
-        Player, Karten, Mitte, stapel, SBlind, BBlind, Turn, Raise, Ingame, AllIn = Reset(Mitte, Player, Karten, Ingame, SBlind, BBlind)
+        Player, Karten, Mitte, stapel, Turn, Raise, Ingame, AllIn = Reset(Mitte, Player, Karten, Ingame)
 #ALle Spieler sind All In gegangen
     if not len(Ingame) and len(AllIn) > 1:
 
@@ -497,7 +475,7 @@ def Test(Ingame, AllIn, Player, Mitte, Karten, SBlind, BBlind, stapel, Chip, SCh
 
         a = Showdown(Karten, Mitte[0], deepcopy(Player), Mitte, AllIn)
 
-        Player, Karten, Mitte, stapel, SBlind, BBlind, Turn, Raise, Ingame, AllIn = Reset(Mitte, Player, Karten, a, SBlind, BBlind)
+        Player, Karten, Mitte, stapel, Turn, Raise, Ingame, AllIn = Reset(Mitte, Player, Karten, a)
 
 #Spieler fliegen raus
     for _ in range(len(Player)):
@@ -537,13 +515,7 @@ def Test(Ingame, AllIn, Player, Mitte, Karten, SBlind, BBlind, stapel, Chip, SCh
 
         rand.shuffle(stapel)
 
-        SBlind[0] = SBlind[0] % len(Player)
-
-        BBlind[0] = BBlind[0] % len(Player)
-
-        Turn = (BBlind[0] + 1) % len(Player)
-
-        Player, Mitte, stapel, Karten = KartenAusteilen(Player, Mitte, stapel, Karten, SBlind, BBlind)
+        Player, Mitte, stapel, Karten = KartenAusteilen(Player, Mitte, stapel, Karten)
 
         BP = []
 
@@ -592,11 +564,12 @@ def Test(Ingame, AllIn, Player, Mitte, Karten, SBlind, BBlind, stapel, Chip, SCh
 #Ein Spieler gewinnt
     if len(Player) == 1:
 
-        run = Winner(Player[0], SBlind, BBlind, *M)
+        run = Winner(Player[0], *M)
 
-    return Ingame, AllIn, Player, Mitte, Karten, SBlind, BBlind, Chip, SChip, stapel, BP, SBP, Turn, run
+    return Ingame, AllIn, Player, Mitte, Karten, Chip, SChip, stapel, BP, SBP, Turn, run
 
-def Enter(Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlind, Chip, SChip, BP, SBP, AllIn, M):
+
+def Enter(Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, Chip, SChip, BP, SBP, AllIn, M, client):
 
     Karten[Player[Turn][2][0]].open, Karten[Player[Turn][2][1]].open = 0, 0
 
@@ -618,12 +591,19 @@ def Enter(Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlin
         Ingame.remove(a)
 
         Player[a][1], Mitte[1][a] = Pay(Player[a][1], Mitte[1][a], Player[a][1])
+
+        client.sendTurn(-2)
+
 #Fold
     elif Raise < max(Mitte[1]):
 
         Ingame.remove(a)
+
+        client.sendTurn(-1)
 #Check & Call
     elif Raise == Mitte[1][a]:
+
+        client.sendTurn(0)
 
         if run != len(Ingame):
 
@@ -631,9 +611,11 @@ def Enter(Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlin
 
             Raise = max(Mitte[1])
 
-            return Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlind, Chip, SChip, BP, SBP, AllIn
+            return Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, Chip, SChip, BP, SBP, AllIn
 #Raise
     else:
+
+        client.sendTurn(Raise - Mitte[1][a])
 
         Player[a][1], Mitte[1][a] = Pay(Player[a][1], Mitte[1][a], Raise - Mitte[1][a])
 
@@ -663,7 +645,7 @@ def Enter(Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlin
 
                 a = Showdown(Karten, Mitte[0], deepcopy(Player), Mitte, Ingame)
 
-                Player, Karten, Mitte, stapel, SBlind, BBlind, Turn, Raise, Ingame, AllIn = Reset(Mitte, Player, Karten, a, SBlind, BBlind)
+                Player, Karten, Mitte, stapel, Turn, Raise, Ingame, AllIn = Reset(Mitte, Player, Karten, a)
 
             if len(Mitte[0]) == 4:
 
@@ -697,9 +679,10 @@ def Enter(Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlin
 
                     del stapel[0]
 
-    Ingame, AllIn, Player, Mitte, Karten, SBlind, BBlind, Chip, SChip, stapel, BP, SBP, Turn, run = Test(Ingame, AllIn, Player, Mitte, Karten, SBlind, BBlind, stapel, Chip, SChip, BP, SBP, Turn, run, M)
+    Ingame, AllIn, Player, Mitte, Karten, Chip, SChip, stapel, BP, SBP, Turn, run = Test(Ingame, AllIn, Player, Mitte, Karten, stapel, Chip, SChip, BP, SBP, Turn, run, M)
 
-    return Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlind, Chip, SChip, BP, SBP, AllIn
+    return Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, Chip, SChip, BP, SBP, AllIn
+
 
 def Info(P, M, Raise):
 
@@ -754,7 +737,8 @@ def Info(P, M, Raise):
 
     win.blit(font.render(str(Raise) + '$', False, (50, 50, 50)), ((w - dx) / 2, 9 * h / 16 - dy / 2))
 
-def Pause(P, B, SBlind, BBlind, M):
+
+def Pause(P, B, M):
 
     run = True
 
@@ -791,7 +775,7 @@ def Pause(P, B, SBlind, BBlind, M):
 
                 if pg.Rect(Box[1]).collidepoint(event.pos):
 
-                    Game(P, B, SBlind, BBlind, M)
+                    Game(P, B, M)
 
                     return False
 
@@ -827,7 +811,8 @@ def Pause(P, B, SBlind, BBlind, M):
 
                 Inf[_] += 1
 
-def Game(P, B, SBlind, BBlind, M):
+
+def Game(P, B, M, Name):
 
     Karten = ['karo-2', 'karo-3', 'karo-4', 'karo-5', 'karo-6', 'karo-7', 'karo-8', 'karo-9', 'karo-10', 'karo-bube', 'karo-dame', 'karo-koenig', 'karo-ass',
               'herz-2', 'herz-3', 'herz-4', 'herz-5', 'herz-6', 'herz-7', 'herz-8', 'herz-9', 'herz-10', 'herz-bube', 'herz-dame', 'herz-koenig', 'herz-ass',
@@ -844,9 +829,11 @@ def Game(P, B, SBlind, BBlind, M):
 
     AllIn = []
 
+    client = Client.Client(Name, ('127.0.0.1', 62435))
+
     for _ in range(P + B):
 
-        Player.append([_, M, [0, 0], 'Name'])
+        Player.append([_, M, [0, 0]])
 
         Mitte[1].append(0)
 
@@ -868,7 +855,7 @@ def Game(P, B, SBlind, BBlind, M):
              pg.transform.scale(pg.image.load('Chips/50.png').convert_alpha(), (int(195 / len(Player) + 10), int(195 / len(Player) + 10))),
              pg.transform.scale(pg.image.load('Chips/250.png').convert_alpha(), (int(195 / len(Player) + 10), int(195 / len(Player) + 10)))]
 
-    Player, Mitte, stapel, Karten = KartenAusteilen(Player, Mitte, stapel, Karten, SBlind, BBlind)
+    Player, Mitte, stapel, Karten = KartenAusteilen(Player, Mitte, stapel, Karten)
 
     BP = []
 
@@ -905,7 +892,7 @@ def Game(P, B, SBlind, BBlind, M):
 
     Raise = BBlind[1]
 
-    Turn = 2
+    Turn = 0
 
     font = pg.font.Font(None, 50)
 
@@ -917,11 +904,11 @@ def Game(P, B, SBlind, BBlind, M):
 #Draw Playground
             Color = [0, 150, 0]
 
-            if _ == SBlind[0]:
+            if _ == client.getServerPool()['SBlind']:
 
                 Color = [0, 50, 255]
 
-            if _ == BBlind[0]:
+            if _ == client.getServerPool()['BBlind']:
 
                 Color = [205, 255, 0]
 
@@ -953,7 +940,39 @@ def Game(P, B, SBlind, BBlind, M):
                 (-_ - 1) * 2 * m.pi / len(Player) + m.pi / len(Player)) * w * 2, h / 2 + m.cos(
                 (-_ - 1) * 2 * m.pi / len(Player) + m.pi / len(Player)) * w * 2)), 5)
 #Draw Chips of other Players
+
+            '''a = [(Karten[Player[_][2][0]].pos[0] + Karten[Player[_][2][1]].pos[0]) / 2,
+                 (Karten[Player[_][2][0]].pos[1] + Karten[Player[_][2][1]].pos[1]) / 2]
+
+            b = [1, 1]
+
+            if int(Player[_][1] / 250) >= 1: b[0] = 1.5
+
+            elif int(Player[_][1] / 50) >= 1: b[0] = 1
+
+            elif int(Player[_][1] / 10) >= 1: b[0] = 0.5
+
+            else: b[0] = 0
+
+            if int(Mitte[1][_] / 250) >= 1: b[1] = 1.5
+
+            elif int(Mitte[1][_] / 50) >= 1: b[1] = 1
+
+            elif int(Mitte[1][_] / 10) >= 1: b[1] = 0.5
+
+            else: b[1] = 0'''
+
             if _ != Turn:
+
+                '''for __ in range(int(b[0] * 2 + 1)):
+
+                    BP[_][__ + 2] = [BP[_][0] - (b[0] - __) * m.sin(-_ * 2 * m.pi / len(Player) + m.pi / 2) * Chip[0].get_width(),
+                                     BP[_][1] - (b[0] - __) * m.cos(-_ * 2 * m.pi / len(Player) + m.pi / 2) * Chip[0].get_width()]
+
+                for __ in range(int(b[1] * 2) + 1):
+
+                    SBP[_][__ + 2] = [SBP[_][0] - (b[1] - __) * m.sin(-_ * 2 * m.pi / len(Player) + m.pi / 2) * SChip[0].get_width(),
+                                      SBP[_][1] - (b[1] - __) * m.cos(-_ * 2 * m.pi / len(Player) + m.pi / 2) * SChip[0].get_width()]'''
 
                 Chips(Player[_][1], BP[_], Chip)
 
@@ -1032,13 +1051,13 @@ def Game(P, B, SBlind, BBlind, M):
 
                 if event.button == 3:
 
-                    Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlind, Chip, SChip, BP, SBP, AllIn = Enter(Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlind, Chip, SChip, BP, SBP, AllIn, [P, B, M])
+                    Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, Chip, SChip, BP, SBP, AllIn = Enter(Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, Chip, SChip, BP, SBP, AllIn, [P, B, M], client)
 
             if event.type == pg.KEYDOWN:
 
                 if event.key == pg.K_ESCAPE:
 
-                    run = Pause(P, B, SBlind, BBlind, M)
+                    run = Pause(P, B, M)
 
                 if event.key == pg.K_SPACE:
 
@@ -1076,19 +1095,7 @@ def Game(P, B, SBlind, BBlind, M):
 
                 if event.key == pg.K_RETURN:
 
-                    Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlind, Chip, SChip, BP, SBP, AllIn = Enter(Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlind, Chip, SChip, BP, SBP, AllIn, [P, B, M])
-
-                if event.key == pg.K_BACKSPACE:
-
-                    if Turn == Ingame[-1]:
-
-                        Turn = Ingame[0]
-
-                    else:
-
-                        Turn = Ingame[Ingame.index(Turn) + 1]
-
-                    Ingame.remove(Turn)
+                    Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, Chip, SChip, BP, SBP, AllIn = Enter(Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, Chip, SChip, BP, SBP, AllIn, [P, B, M], client)
 
 pg.init()
 
@@ -1149,7 +1156,7 @@ while run:
 
             if pg.Rect(Box[0]).collidepoint(event.pos) and event.button == 1:
 
-                Game(Players, Bots, [0, SBlind], [1, BBlind], Money)
+                Game(Players, Bots, [(-2) % (Players + Bots), SBlind], [(-1) % (Players + Bots), BBlind], Money)
 
             if pg.Rect(Box[1]).collidepoint(event.pos):
 

@@ -19,6 +19,9 @@ class Client:
         self.connect = connect
         pass
 
+    def openLobby(self) -> bool:
+        pass
+
     def joinLobby(self, lobbyId: str) -> bool:
         pass
 
@@ -34,7 +37,10 @@ class Client:
     def sendTurn(self, commitment: int):  # 0 = hold -1 = fold -2 = allin}
         pass
 
-    def OpenLobby(self, name, money, smallBlind, bigBlind, playerNum) -> str:
+    def getPlayerCommitment(self) -> (bool, int, int):
+        pass
+
+    def setLobbyParameter(self, money, smallBlind, bigBlind, playerNum) -> str:
         pass
 
     def playAgain(self) -> bool:
