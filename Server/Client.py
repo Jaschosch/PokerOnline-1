@@ -84,11 +84,10 @@ class Client:
         self.send(Client._getServerPool, None)
         print(self.getData())
         return {
-            "OpenCards": [45, 60],
-            "OpenCardsType": ...,
-            "moneyPool": ...,
-            "winner": ...,
-            "ifWinner": False,
+            "OpenCards": [],
+            "Pot": [],
+            "winner": 0,
+            "winnerOfGame": 0,
             "onwCards": [...],
             "name": self.name,
             "pl": [1200, 120, ]

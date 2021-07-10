@@ -3,6 +3,7 @@ import threading
 from datetime import datetime
 from typing import List
 import pickle
+import random as rand
 
 
 class ClientConnection:
@@ -14,7 +15,8 @@ class ClientConnection:
         self.clientName = str(clientAddress[0]) + ':' + str(clientAddress[1])
         self.lobby = None
         self.playAgain = False
-        self.localPool = {}
+        self.localPool = {'Cards': [-1, -1],
+                          'Money': ...}
         self.onTurn_val = False
         self.online = False
 
@@ -147,14 +149,13 @@ class Lobby:
     def __init__(self, name):
         self.name = name
         self.money = None
-        self.smallBlind = None
-        self.bigBlind = None
+        self.SBlind = 10
+        self.BBlind = 20
         self.playerNum = None
         self.BotNum = None
         self.PlayerList: List[ClientConnection] = []
         self.onTurn = -1
         self.acPlayers = 0
-        self.Vars = -0
         self.globalPool = {
             'OpenedCards': [],
             'Pot': [],
@@ -162,10 +163,16 @@ class Lobby:
             'AllIn': [],
             'check': 1,
             'stapel': list(range(52)),
-            'Showdown': 0
+            'Showdown': 0,
+            'Raise': self.BBlind,
+            'Players': ...,
+            'Blinds': [0, 1],
+            'Turn': 0
         }
         x = 1
         self.maxMoneyInRound = 0
+
+    def HandOutCards(self): pass
 
     def setParm(self, money, smallBlind, bigBlind, playerNum):
         self.money, self.smallBlind, self.bigBlind, self.playerNum = money, smallBlind, bigBlind, playerNum
@@ -184,6 +191,43 @@ class Lobby:
     def endGame(self):
         pass
 
+    def endRound(self, Showdown):
+
+        a = 0
+
+        for _ in range(len(self.globalPool['Pot'])):
+
+            a += self.globalPool['Pot'][_]
+
+            self.globalPool['Pot'] = 0
+
+        for _ in range(len(Showdown)):
+
+            self.PlayerList[Showdown[_]].localPool['Money'] += int(a / (len(Showdown) - _))
+
+            Showdown -= int(a / (len(Showdown) - _))
+
+        self.globalPool['Blinds'][0] = (self.globalPool['Blinds'][0] + 1) % self.globalPool['Players']
+
+        self.globalPool['Blinds'][1] = (self.globalPool['Blinds'][1] + 1) % self.globalPool['Players']
+
+        self.globalPool['Turn'] = (self.globalPool['Blinds'][1] + 1) % self.globalPool['Players']
+
+        self.globalPool['Raise'] = self.BBlind
+
+        self.globalPool = {
+            'OpenedCards': [],
+            'Pot': [],
+            'Ingame': list(range(self.acPlayers)),
+            'AllIn': [],
+            'check': 1,
+            'stapel': list(range(52)),
+            'Showdown': 0,
+            'Raise': self.BBlind
+        }
+
+        self.HandOutCards()
+
     def openNextCard(self):
         pass
 
@@ -201,7 +245,7 @@ class Lobby:
 
             Ingame[1].append(0)
 
-            x = [sorted(self.globalPool['OpenedCards'] + self.PlayerList[1].localPool['PlayerCards']), [], []]
+            x = [sorted(self.globalPool['OpenedCards'] + self.PlayerList[1].localPool['Cards']), [], []]
 
             for __ in x[0]:
 

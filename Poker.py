@@ -524,7 +524,7 @@ def Enter(Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, Chip, SChip, 
     return Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, Chip, SChip, BP, SBP, AllIn
 
 
-def Info(P, M, Raise):
+'''def Info(P, M, Raise):
 
     font = pg.font.Font(None, 100)
 
@@ -575,7 +575,7 @@ def Info(P, M, Raise):
 
     dx, dy = font.size(str(Raise) + '$')
 
-    win.blit(font.render(str(Raise) + '$', False, (50, 50, 50)), ((w - dx) / 2, 9 * h / 16 - dy / 2))
+    win.blit(font.render(str(Raise) + '$', False, (50, 50, 50)), ((w - dx) / 2, 9 * h / 16 - dy / 2))'''
 
 
 def Pause(P, B, M):
@@ -659,25 +659,7 @@ def Game(P, B, M, Name):
               'pik-2', 'pik-3', 'pik-4', 'pik-5', 'pik-6', 'pik-7', 'pik-8', 'pik-9', 'pik-10', 'pik-bube', 'pik-dame', 'pik-koenig', 'pik-ass',
               'kreuz-2', 'kreuz-3', 'kreuz-4', 'kreuz-5', 'kreuz-6', 'kreuz-7', 'kreuz-8', 'kreuz-9', 'kreuz-10', 'kreuz-bube', 'kreuz-dame', 'kreuz-koenig', 'kreuz-ass']
 
-    stapel = list(range(52))
-
-    Player = []
-
-    Mitte = [[], []]
-
-    Ingame = []
-
-    AllIn = []
-
     client = Client.Client(Name, ('127.0.0.1', 62435))
-
-    for _ in range(P + B):
-
-        Player.append([_, M, [0, 0]])
-
-        Mitte[1].append(0)
-
-        Ingame.append(_)
 
     for _ in range(len(Karten)):
 
