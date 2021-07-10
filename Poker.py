@@ -1092,7 +1092,7 @@ def Game(P, B, SBlind, BBlind, M):
 
 pg.init()
 
-win = pg.display.set_mode((0, 0), pg.FULLSCREEN)
+win = pg.display.set_mode((0, 0), 0)#pg.FULLSCREEN)
 
 w, h = win.get_size()
 
