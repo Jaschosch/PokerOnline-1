@@ -43,7 +43,6 @@ class Client:
         self.connection.connect(self.connect)
         self.connection.send(b'gtzfh667zuioukj8')
         self.clientName = str(self.connection.recv(512), "utf-8")
-        print(self.clientName)
         x = {"N": self.name}
         self.connection.send(pickle.dumps(x))
         ping = self.ping()
@@ -51,7 +50,6 @@ class Client:
               f"\t@{self.name} -> ping {ping}ms")
 
     def open_lobby(self, val) -> bool:  # money, smallBlind, bigBlind, playerNum
-        print("openLobby")
         self.send(Client._openLobby, val)
         return self.get_data()
 
@@ -63,7 +61,7 @@ class Client:
         self.send(Client._OnTurn, None)
         return self.get_data()
 
-    def get_lobbyList(self) -> List[str]:
+    def get_lobby_list(self) -> List[str]:
         self.send(Client._getLobbyList, None)
         return self.get_data()
 
@@ -104,32 +102,24 @@ class Client:
         return pickle.loads(self.connection.recv(1024))
 
     def test_client_server(self):
-        pass
+        print(self.open_lobby({"name": "test", "money": "10K", "smallBlind": "2.5t", "playerNum": 10}))
+        print("getLobbyList-> ", self.get_lobby_list())
+        print("joinLobby-> ", self.join_lobby("dasda"))
+        print("leveLobby-> ", self.leve_lobby())
+        print("joinLobby-> ", self.join_lobby("tes132t"))
+        print("leveLobby-> ", self.leve_lobby())
+        print("joinLobby-> ", self.join_lobby("te5s4t"))
+        print("getLobbyList-> ", self.get_lobby_list())
+        print("OnTurn-> ", self.on_turn())
+        print("getLocalPool-> ", self.get_local_pool())
+        print("getServerPool-> ", self.get_server_pool())
 
 
 if __name__ == '__main__':
     c = Client("Markin", ("0.0.0.0", 62435))
     c.first_connection()
     time.sleep(2)
-    print(c.open_lobby({"name": "test", "money": "10K", "smallBlind": "2.5t", "playerNum": 10}))
-    print(c.open_lobby({"name": "test1", "money": "10K", "smallBlind": "2.5t", "playerNum": 10}))
-    print(c.open_lobby({"name": "test2", "money": "10K", "smallBlind": "2.5t", "playerNum": 10}))
-    print(c.open_lobby({"name": "test3", "money": "10K", "smallBlind": "2.5t", "playerNum": 10}))
-    print(c.open_lobby({"name": "te5s4t", "money": "10K", "smallBlind": "2.5t", "playerNum": 10}))
-    print(c.open_lobby({"name": "tes5235t", "money": "10K", "smallBlind": "2.5t", "playerNum": 10}))
-    print(c.open_lobby({"name": "tes123t", "money": "10K", "smallBlind": "2.5t", "playerNum": 10}))
-    print(c.open_lobby({"name": "tes132t", "money": "10K", "smallBlind": "2.5t", "playerNum": 10}))
-
-    print("getLobbyList-> ", c.get_lobbyList())
-    print("joinLobby-> ", c.join_lobby("dasda"))
-    print("leveLobby-> ", c.leve_lobby())
-    print("joinLobby-> ", c.join_lobby("tes132t"))
-    print("leveLobby-> ", c.leve_lobby())
-    print("joinLobby-> ", c.join_lobby("te5s4t"))
-    print("getLobbyList-> ", c.get_lobbyList())
-    print("OnTurn-> ", c.on_turn())
-    print("getLocalPool-> ", c.get_local_pool())
-    print("getServerPool-> ", c.get_server_pool())
+    c.test_client_server()
 
     while True:
         pass

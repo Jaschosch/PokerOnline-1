@@ -43,7 +43,6 @@ class ClientConnection:
         while self.online:
             try:
                 data = pickle.loads(self.clientSocket.recv(1024))
-                print(100*"_", "\n", data, "\n", 100*"_")
                 if data["command"] == _ping:
                     self.send("pong")
                 elif data["command"] == _commitment:
@@ -96,7 +95,6 @@ class ClientConnection:
 
     def send(self, data):
         try:
-            print(data)
             self.clientSocket.send(pickle.dumps(data))
         except Exception as e:
             print(f"{'=' * 100}\n@ClientConnection name : {self.name}, {self.clientName} : ERROR at SEND "
