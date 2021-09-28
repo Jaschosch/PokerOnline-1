@@ -26,8 +26,6 @@ class Client:
     _OnTurn = 1651
     _commitment = 1646
     _ping = 0
-    HOST = '127.0.0.1'
-    PORT = 62435
     TIME_FORMAT = '%Y.%m.%d -> %H:%M:%S'
     VERSION = "0.0"
     Update = False
@@ -116,7 +114,7 @@ class Client:
 
 
 if __name__ == '__main__':
-    c = Client("Markin", ("0.0.0.0", 62435))
+    c = Client("Janosch", ("192.168.0.9", 62435))
     c.first_connection()
     time.sleep(2)
     c.test_client_server()
