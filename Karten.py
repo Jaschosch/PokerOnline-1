@@ -83,13 +83,22 @@ class Cards:
 
         self.pos = [Point[0] + m.sin(m.radians(self.angle)) * self.height, Point[1] + m.cos(m.radians(self.angle)) * self.height]
 
-    def Stapel(self, Point, pos, Count):
+    def Stapel(self, Point, pos, Count, Distance):
 
-        self.pos = [Point[0] + pos - Count, Point[1]]
+        self.pos = [Point[0] + (pos - Count) * Distance, Point[1]]
 
         self.dx, self.dy = self.width, self.height
 
         self.angle = 0
+
+    def rotStapel(self, Point, pos, Count, Distance, Rotation):
+
+        self.angle = Rotation
+
+        self.dx, self.dy = pg.transform.rotate(self.front, self.angle).get_size()
+
+        self.pos = [Point[0] + m.sin(m.radians(self.angle) - m.pi/2) * (pos - Count) * (self.width + Distance),
+                    Point[1] + m.cos(m.radians(self.angle) - m.pi/2) * (pos - Count) * (self.width + Distance)]
 
     def Scale(self, W, H):
 
@@ -104,3 +113,5 @@ class Cards:
         self.height = H
 
         self.dy = H
+
+    def DrawPhantom(self): pass

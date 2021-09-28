@@ -4,7 +4,11 @@ import math as m
 
 import time as t
 
+import threading
+
 import random as rand
+
+from Server.Server import *
 
 from Server.Client import Client as c
 
@@ -839,8 +843,8 @@ def Pause(P, B, SBlind, BBlind, M):
 
 def Game(HMP, SBlind, MPP):     #HowManyPlayers     MonyPerPerson
 
-    client = Client.Client(Name, ('127.0.0.1', 62435))
-    Input = client.getServerPool()      #Mitte, Karten, Startguthaben
+    #client = Client.Client(Name, ('127.0.0.1', 62435))
+    #Input = client.getServerPool()      #Mitte, Karten, Startguthaben
     s = list(range(52))
 
     rand.shuffle(s)
@@ -1027,7 +1031,7 @@ def Game(HMP, SBlind, MPP):     #HowManyPlayers     MonyPerPerson
 
                 if event.key == pg.K_BACKSPACE: Ingame.remove(You["Name"])
 
-def GameStats():
+def GameStats(Name):
 
     Players = 3
 
@@ -1035,11 +1039,12 @@ def GameStats():
 
     Money = 100
 
-    Text = ['Start', '100 $', 'Small Blind = 10', '3 Players', 'Quit']
+    Writing = False
 
-    Box = [[w / 8, h / 13, 5 * w / 16, 2 * h / 13], [9 * w / 16, h / 13, 5 * w / 16, 2 * h / 13],
-           [w / 8, 4 * h / 13, 3 * w / 4, 2 * h / 13], [w / 8, 7 * h / 13, 3 * w / 4, 2 * h / 13],
-           [w / 8, 10 * h / 13, 3 * w / 4, 2 * h / 13]]
+    Text = ['Start', '100 $', 'Small Blind = 10', '3 Players', 'LobbyName', 'Back']
+
+    Box = [[w/8, h/13, 5*w/16, 2*h/13], [9*w/16, h/13, 5*w/16, 2*h/13], [w/8, 4*h/13, 5*w/16, 2*h/13],
+           [9*w/16, 4*h/13, 5*w/16, 2*h/13], [w/8, 7*h/13, 3*w/4, 2*h/13], [w/8, 10*h/13, 3*w/4, 2*h/13]]
 
     run = True
 
@@ -1047,15 +1052,15 @@ def GameStats():
 
         win.fill((0, 90, 20))
 
-        for _ in range(5):
+        for _ in range(len(Box)):
+
             pg.draw.rect(win, (0, 135, 30), Box[_], 2)
 
             pg.draw.rect(win, (150, 150, 150), Box[_])
 
             dx, dy = pg.font.Font(None, int(Box[_][3] / 2)).size(Text[_])
 
-            win.blit(pg.font.Font(None, int(Box[_][3] / 2)).render(Text[_], False, (0, 90, 20)),
-                     (Box[_][0] + (Box[_][2] - dx) / 2, Box[_][1] + (Box[_][3] - dy) / 2))
+            win.blit(pg.font.Font(None, int(Box[_][3] / 2)).render(Text[_], False, (0, 90, 20)), (Box[_][0] + (Box[_][2] - dx) / 2, Box[_][1] + (Box[_][3] - dy) / 2))
 
         pg.display.flip()
 
@@ -1066,9 +1071,19 @@ def GameStats():
                 if event.button == 1:
 
                     if pg.Rect(Box[0]).collidepoint(event.pos):
-                        Game(Players, SBlind, Money)
 
-                    if pg.Rect(Box[4]).collidepoint(event.pos):
+                        if Text[4] != 'LobbyName':
+
+                            pass#c.open_lobby({"name": Text[4], "money": Money, "smallBlind": SBlind, "playerNum": Players})
+
+                            Game(Players, SBlind, Money)
+
+                    if pg.Rect(Box[4]).collidepoint(event.pos): Writing = True
+
+                    else: Writing = False
+
+                    if pg.Rect(Box[5]).collidepoint(event.pos):
+
                         run = False
 
                         break
@@ -1140,11 +1155,42 @@ def GameStats():
 
                 Text[3] = str(Players) + ' Players'
 
+            if event.type == pg.KEYDOWN:
+
+                if event.key == pg.K_ESCAPE:
+
+                    run = False
+
+                    break
+
+                elif Writing:
+
+                    if event.key == pg.K_RETURN:
+
+                        pass#c.open_lobby({"name": Text[4], "money": Money, "smallBlind": SBlind, "playerNum": Players})
+
+                        Game(Players, SBlind, Money)
+
+                    elif event.key == pg.K_BACKSPACE:
+
+                        if Text[4] != 'LobbyName': Text[4] = Text[4][:-1]
+
+                        if Text[4] == '': Text[4] = 'LobbyName'
+
+                    else:
+
+                        if Text[4] == 'LobbyName': Text[4] = ''
+
+                        Text[4] += event.unicode
+
+                        # Markins befehl gegen Sonderzeichen
+
         for _ in range(len(Box)):
 
             if pg.Rect(Box[_]).collidepoint(pg.mouse.get_pos()):
 
                 if Box[_][3] < 3 * h / 13:
+
                     Box[_][0] -= 1
 
                     Box[_][1] -= 0.5
@@ -1165,14 +1211,14 @@ def GameStats():
 
 def FindLobby(Name):
 
-    client = c(Name, ('192.168.0.9', 62435))
+    #client = c(Name, ('localhost', 62435))
 
-    Ping = client.first_connection()
+    #Ping = client.first_connection()
 
-    Lobbys = client.get_lobby_list()
+    IDs, Lobbys = 0, 'dfjsiogüsidjgidjf'#client.get_lobby_list()
 
     Text = ['+', *Lobbys]
-    print(Text)
+
     Box = []
 
     for _ in range(len(Text)): Box.append([w/8, h/13+_*3*h/13, 3*w/4, h/6])
@@ -1189,7 +1235,7 @@ def FindLobby(Name):
 
             dx, dy = pg.font.Font(None, int(Box[_][3] / 2)).size(Text[_])
 
-            win.blit(pg.font.Font(None, int(Box[_][3] / 2)).render(Text[_], False, (0, 90, 20)), (Box[_][0] + (Box[_][2] - dx) / 2, Box[_][1] + (Box[_][3] - dy) / 2))
+            win.blit(pg.font.Font(None, int(Box[_][3] / 2)).render(Text[_], False, (150, 150, 150)), (Box[_][0] + (Box[_][2] - dx) / 2, Box[_][1] + (Box[_][3] - dy) / 2))
 
         pg.display.flip()
 
@@ -1202,6 +1248,34 @@ def FindLobby(Name):
                     run = False
 
                     break
+
+            if event.type == pg.MOUSEBUTTONDOWN:
+
+                if event.button == 1:
+
+                    for _ in range(len(Box)):
+
+                        if pg.Rect(Box[_]).collidepoint(event.pos):
+
+                            if _: pass#c.join_lobby(IDs[_-1])
+
+                            else: GameStats(Name)
+
+                x = 10
+
+                if pg.mouse.get_pressed()[1]: x = 100
+
+                if event.button == 4:
+
+                    if Box[0][1]+x > h/13: x = h/13-Box[0][1]
+
+                    for _ in range(len(Box)): Box[_][1] += x
+
+                if event.button == 5:
+
+                    if Box[-1][1]+Box[-1][3]-x < 12*h/13: x = Box[-1][1]+Box[-1][3]-12*h/13
+
+                    for _ in range(len(Box)): Box[_][1] -= x
 
 pg.init()
 

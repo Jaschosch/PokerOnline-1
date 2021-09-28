@@ -43,6 +43,7 @@ class ClientConnection:
         while self.online:
             try:
                 data = pickle.loads(self.clientSocket.recv(1024))
+                print(data)
                 if data["command"] == _ping:
                     self.send("pong")
                 elif data["command"] == _commitment:
@@ -141,7 +142,7 @@ class Lobby:
         self.maxMoneyInRound = 0
 
     def lobby_infos(self):
-        return (self.name, self.acPlayers)
+        return 'EYYOOOOOOOOOOOOOOOOOO'
 
     def hand_out_cards(self):
         pass
@@ -452,7 +453,7 @@ class Lobby1:
                         del self.globalPool['stapel'][0]
 
 
-def open_server() -> socket:
+def open_server(HOST, PORT) -> socket:
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind((HOST, PORT))
     sock.listen(0)
@@ -493,12 +494,10 @@ def open_lobby(name, money, small_blind, player_num, player0):
 if __name__ == '__main__':
     TIME_FORMAT = '%Y.%m.%d -> %H:%M:%S'
     Lobby_list = []
-    HOST = ""
-    PORT = 62435
     VERSION = "0.0"
     rMODES = ["C", "L", "G", "P"]  # C -> connect | L -> Lobby | G -> Gema | P -> Ping
     Update = False
-    sock = open_server()
+    sock = open_server("", 62435)
     print("Server Online:", sock.getsockname())
     connections_handler(sock)
     while True:
