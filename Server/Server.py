@@ -283,9 +283,10 @@ class Lobby1:
 
             Ingame[1].append(0)
 
-            x = [sorted(self.globalPool['OpenedCards'] + self.PlayerList[1].localPool['Cards']), [], []]
+            x = [sorted(self.globalPool['OpenedCards']+self.PlayerList[1].localPool['Cards']), [], []]
 
             for __ in x[0]:
+
                 x[1].append(__ % 13)
 
                 x[2].append(int(__ / 13))
@@ -294,13 +295,9 @@ class Lobby1:
             # Straight(-Flush)
             for __ in range(6, 0, -1):
 
-                if x[1][__] - 1 == x[1][__ - 1]:
+                if x[1][__] - 1 == x[1][__ - 1]: z.append(__)
 
-                    z.append(__)
-
-                else:
-
-                    z = []
+                else: z = []
 
                 if len(z) == 5:
 
@@ -308,8 +305,7 @@ class Lobby1:
 
                     for ___ in range(5): z[___] = x[2][x[1].index(z[___])]
 
-                    if z.count(0) == 5 or z.count(1) == 5 or z.count(2) == 5 or z.count(3) == 5:
-                        Ingame[1][Ingame[0].index(_)] += 400
+                    if z.count(0) == 5 or z.count(1) == 5 or z.count(2) == 5 or z.count(3) == 5: Ingame[1][Ingame[0].index(_)] += 400
 
                     break
 
@@ -323,15 +319,14 @@ class Lobby1:
 
                     for ___ in x[0]:
 
-                        if x[2][x[0].index(___)] == __:
-                            z.append(___)
+                        if x[2][x[0].index(___)] == __: z.append(___)
 
-                    for ___ in range(len(z)):
-                        Ingame[1][Ingame[0].index(_)] += 0.5 * x[1][x[0].index(z[___])] / (10 ** (len(z) - ___))
+                    for ___ in range(len(z)): Ingame[1][Ingame[0].index(_)] += 0.5 * x[1][x[0].index(z[___])] / (10 ** (len(z) - ___))
             # Quads
             for __ in range(4):
 
                 if x[1].count(x[1][__]) >= 4 and Ingame[1][Ingame[0].index(_)] < 700:
+
                     Ingame[1][Ingame[0].index(_)] = 700 + x[1][__]
 
                     break
@@ -342,9 +337,7 @@ class Lobby1:
 
                     for ___ in range(5, -1, -1):
 
-                        if x[1].count(sorted(x[1])[__]) >= 2 and sorted(x[1])[__] != sorted(x[1])[___] and Ingame[1][
-                            Ingame[0].index(_)] < 600:
-                            Ingame[1][Ingame[0].index(_)] = 600 + sorted(x[1])[__] + sorted(x[1])[___] / 20
+                        if x[1].count(sorted(x[1])[__]) >= 2 and sorted(x[1])[__] != sorted(x[1])[___] and Ingame[1][Ingame[0].index(_)] < 600: Ingame[1][Ingame[0].index(_)] = 600 + sorted(x[1])[__] + sorted(x[1])[___] / 20
 
                     if Ingame[1][Ingame[0].index(_)] < 300:
 
@@ -354,8 +347,7 @@ class Lobby1:
 
                         for __ in range(2): a.remove(sorted(x[1])[__])
 
-                        for ___ in range(6):
-                            Ingame[1][Ingame[0].index(_)] += 0.5 * a[___] / (10 ** (6 - ___))
+                        for ___ in range(6): Ingame[1][Ingame[0].index(_)] += 0.5 * a[___] / (10 ** (6 - ___))
             # (2) Pair
             for __ in range(6, 0, -1):
 
@@ -363,20 +355,19 @@ class Lobby1:
 
                     for ___ in range(6, 0, -1):
 
-                        if x[1].count(sorted(x[1])[___]) == 2 and sorted(x[1])[__] != sorted(x[1])[___] and Ingame[1][
-                            Ingame[0].index(_)] < 200:
+                        if x[1].count(sorted(x[1])[___]) == 2 and sorted(x[1])[__] != sorted(x[1])[___] and Ingame[1][Ingame[0].index(_)] < 200:
 
                             Ingame[1][Ingame[0].index(_)] = 200 + sorted(x[1])[__] + sorted(x[1])[___] / 100
 
                             a = x[1]
 
                             for ____ in range(2):
+
                                 a.remove(sorted(x[1])[__])
 
                                 a.remove(sorted(x[1])[___])
 
-                            for ____ in range(3):
-                                Ingame[1][Ingame[0].index(_)] += 0.5 * sorted(x[1])[____] / (10 ** (3 - ____))
+                            for ____ in range(3): Ingame[1][Ingame[0].index(_)] += 0.5 * sorted(x[1])[____] / (10 ** (3 - ____))
 
                             break
 
@@ -388,15 +379,13 @@ class Lobby1:
 
                         for ___ in range(2): a.remove(sorted(x[1])[__])
 
-                        for ___ in range(5): Ingame[1][Ingame[0].index(_)] += 0.5 * sorted(x[1])[___] / (
-                                10 ** (5 - ___))
+                        for ___ in range(5): Ingame[1][Ingame[0].index(_)] += 0.5 * sorted(x[1])[___] / (10 ** (5 - ___))
             # High Card
             if not Ingame[1][Ingame[0].index(_)]:
 
                 Ingame[1][Ingame[0].index(_)] = max(x[1])
 
-                for __ in range(6):
-                    Ingame[1][Ingame[0].index(_)] += 0.5 * sorted(x[1])[__] / (10 ** (6 - __))
+                for __ in range(6): Ingame[1][Ingame[0].index(_)] += 0.5 * sorted(x[1])[__] / (10 ** (6 - __))
         # Who Wins?
         for _ in range(len(Ingame[0])):
 
@@ -430,8 +419,7 @@ class Lobby1:
 
             elif _ == self.globalPool['Ingame'][-1]:
 
-                if self.globalPool['check'] == len(self.globalPool['Ingame']):
-                    self.globalPool['check'] = 1
+                if self.globalPool['check'] == len(self.globalPool['Ingame']): self.globalPool['check'] = 1
 
                 if len(self.globalPool['OpenedCards']) == 5:
 
@@ -448,6 +436,7 @@ class Lobby1:
                 else:
 
                     for __ in range(3):
+
                         self.globalPool['OpenedCards'].append(self.globalPool['stapel'][0])
 
                         del self.globalPool['stapel'][0]

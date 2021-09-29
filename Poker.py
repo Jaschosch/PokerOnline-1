@@ -715,7 +715,7 @@ def Enter(Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlin
 
     return Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlind, Chip, SChip, BP, SBP, AllIn
 
-def Info(P, M, Raise):
+def Info(HKarten, MKarten, Karten, Chips, Raise):
 
     font = pg.font.Font(None, 100)
 
@@ -723,36 +723,43 @@ def Info(P, M, Raise):
 
     Grey.fill((200, 200, 200))
 
-    Grey.set_alpha(200)
+    Grey.set_alpha(120)
 
     win.blit(Grey, (0, 0))
 
     HKarten = [Cards(['karo-2', 'karo-3', 'karo-4', 'karo-5', 'karo-6', 'karo-7', 'karo-8', 'karo-9', 'karo-10', 'karo-bube', 'karo-dame', 'karo-koenig', 'karo-ass',
               'herz-2', 'herz-3', 'herz-4', 'herz-5', 'herz-6', 'herz-7', 'herz-8', 'herz-9', 'herz-10', 'herz-bube', 'herz-dame', 'herz-koenig', 'herz-ass',
               'pik-2', 'pik-3', 'pik-4', 'pik-5', 'pik-6', 'pik-7', 'pik-8', 'pik-9', 'pik-10', 'pik-bube', 'pik-dame', 'pik-koenig', 'pik-ass',
-              'kreuz-2', 'kreuz-3', 'kreuz-4', 'kreuz-5', 'kreuz-6', 'kreuz-7', 'kreuz-8', 'kreuz-9', 'kreuz-10', 'kreuz-bube', 'kreuz-dame', 'kreuz-koenig', 'kreuz-ass'][P[2][0]], int(126 * h / 716), int(h / 4)), Cards(['karo-2', 'karo-3', 'karo-4', 'karo-5', 'karo-6', 'karo-7', 'karo-8', 'karo-9', 'karo-10', 'karo-bube', 'karo-dame', 'karo-koenig', 'karo-ass',
+              'kreuz-2', 'kreuz-3', 'kreuz-4', 'kreuz-5', 'kreuz-6', 'kreuz-7', 'kreuz-8', 'kreuz-9', 'kreuz-10', 'kreuz-bube', 'kreuz-dame', 'kreuz-koenig', 'kreuz-ass'][HKarten[0]], int(126*h/716), int(h/4)),
+               Cards(['karo-2', 'karo-3', 'karo-4', 'karo-5', 'karo-6', 'karo-7', 'karo-8', 'karo-9', 'karo-10', 'karo-bube', 'karo-dame', 'karo-koenig', 'karo-ass',
               'herz-2', 'herz-3', 'herz-4', 'herz-5', 'herz-6', 'herz-7', 'herz-8', 'herz-9', 'herz-10', 'herz-bube', 'herz-dame', 'herz-koenig', 'herz-ass',
               'pik-2', 'pik-3', 'pik-4', 'pik-5', 'pik-6', 'pik-7', 'pik-8', 'pik-9', 'pik-10', 'pik-bube', 'pik-dame', 'pik-koenig', 'pik-ass',
-              'kreuz-2', 'kreuz-3', 'kreuz-4', 'kreuz-5', 'kreuz-6', 'kreuz-7', 'kreuz-8', 'kreuz-9', 'kreuz-10', 'kreuz-bube', 'kreuz-dame', 'kreuz-koenig', 'kreuz-ass'][P[2][1]], int(126 * h / 716), int(h / 4))]
+              'kreuz-2', 'kreuz-3', 'kreuz-4', 'kreuz-5', 'kreuz-6', 'kreuz-7', 'kreuz-8', 'kreuz-9', 'kreuz-10', 'kreuz-bube', 'kreuz-dame', 'kreuz-koenig', 'kreuz-ass'][HKarten[1]], int(126*h/716), int(h/4))]
 
     for _ in range(2):
 
-        HKarten[_].pos = [w / 2 + (2 * _ - 1) * (126 * h / 1432 + 2), 3 * h / 4]
+        HKarten[_].pos = [w/2+(2*_-1)*(126*h/1432+2), 3*h/4]
 
         HKarten[_].open = 1
 
-    MKarten = []
+    for _ in range(5):
 
-    for _ in M:
+        if Karten[MKarten[_]].open:
 
-        MKarten.append(Cards(['karo-2', 'karo-3', 'karo-4', 'karo-5', 'karo-6', 'karo-7', 'karo-8', 'karo-9', 'karo-10', 'karo-bube', 'karo-dame', 'karo-koenig', 'karo-ass',
+            MKarten[_] = Cards(['karo-2', 'karo-3', 'karo-4', 'karo-5', 'karo-6', 'karo-7', 'karo-8', 'karo-9', 'karo-10', 'karo-bube', 'karo-dame', 'karo-koenig', 'karo-ass',
               'herz-2', 'herz-3', 'herz-4', 'herz-5', 'herz-6', 'herz-7', 'herz-8', 'herz-9', 'herz-10', 'herz-bube', 'herz-dame', 'herz-koenig', 'herz-ass',
               'pik-2', 'pik-3', 'pik-4', 'pik-5', 'pik-6', 'pik-7', 'pik-8', 'pik-9', 'pik-10', 'pik-bube', 'pik-dame', 'pik-koenig', 'pik-ass',
-              'kreuz-2', 'kreuz-3', 'kreuz-4', 'kreuz-5', 'kreuz-6', 'kreuz-7', 'kreuz-8', 'kreuz-9', 'kreuz-10', 'kreuz-bube', 'kreuz-dame', 'kreuz-koenig', 'kreuz-ass'][_], int(126 * h / 716), int(h / 4)))
+              'kreuz-2', 'kreuz-3', 'kreuz-4', 'kreuz-5', 'kreuz-6', 'kreuz-7', 'kreuz-8', 'kreuz-9', 'kreuz-10', 'kreuz-bube', 'kreuz-dame', 'kreuz-koenig', 'kreuz-ass'][MKarten[_]], int(126*h/716), int(h/4))
 
-    for _ in range(len(M)):
+        else:
 
-        MKarten[_].pos = [w / 2 + (2 * _ - len(M) / 2) * (126 * h / 1432 + 2), 3 * h / 8]
+            for __ in range(5-_): del MKarten[-1]
+
+            break
+
+    for _ in range(len(MKarten)):
+
+        MKarten[_].pos = [w/2+_*len(MKarten)*int(126*h/716+2)/2, 3*h/8]
 
         MKarten[_].open = 1
 
@@ -760,13 +767,13 @@ def Info(P, M, Raise):
 
         _.Draw(win)
 
-    dx, dy = font.size(str(P[1]) + '$')
+    dx, dy = font.size(str(Chips) + '$')
 
-    win.blit(font.render(str(P[1]) + '$', False, (50, 50, 50)), ((w - dx) / 2, 15 * h / 16 - dy / 2))
+    win.blit(font.render(str(Chips) + '$', False, (0, 0, 0)), ((w-dx)/2, 15*h/16-dy/2))
 
     dx, dy = font.size(str(Raise) + '$')
 
-    win.blit(font.render(str(Raise) + '$', False, (50, 50, 50)), ((w - dx) / 2, 9 * h / 16 - dy / 2))
+    win.blit(font.render(str(Raise) + '$', False, (0, 0, 0)), ((w-dx)/2, 9*h/16-dy/2))
 
 def Pause(P, B, SBlind, BBlind, M):
 
@@ -888,6 +895,10 @@ def Game(HMP, SBlind, MPP):     #HowManyPlayers     MonyPerPerson
 
         Ingame.append(_)
 
+    Pot[-1] = 20
+
+    Pot[-2] = 10
+
     Chip = [pg.transform.scale(pg.image.load('Chips/2.png').convert_alpha(), (50, 50)),
             pg.transform.scale(pg.image.load('Chips/10.png').convert_alpha(), (50, 50)),
             pg.transform.scale(pg.image.load('Chips/50.png').convert_alpha(), (50, 50)),
@@ -897,12 +908,12 @@ def Game(HMP, SBlind, MPP):     #HowManyPlayers     MonyPerPerson
 
     BP = []
 
-    for a in [1,4/3]:
+    for a in [1, 2.5]:
 
         for _ in range(HMP):
 
-            BP.append([WIW(HMP)[0][_][0] + m.sin(m.radians(WIW(HMP)[1][_])) * 90 * a,
-                       WIW(HMP)[0][_][1] + m.cos(m.radians(WIW(HMP)[1][_])) * 90 * a])
+            BP.append([WIW(HMP)[0][_][0] + m.sin(m.radians(WIW(HMP)[1][_])) * int(h/8.5) * a,
+                       WIW(HMP)[0][_][1] + m.cos(m.radians(WIW(HMP)[1][_])) * int(h/8.5) * a])
 
             for __ in range(4):
 
@@ -911,27 +922,29 @@ def Game(HMP, SBlind, MPP):     #HowManyPlayers     MonyPerPerson
 
             for __ in range(2): del BP[-1][0]
 
+    Raise = max(Pot)
+
     font = pg.font.Font(None, 50)
 
     run = 1
 
-    win.fill((100, 100, 100))
-
-    pg.draw.circle(win, (0, 90, 20), (h / 2, h / 2), h / 2)
-
-    pg.draw.circle(win, (0, 90, 20), (w - h / 2, h / 2), h / 2)
-
-    pg.draw.circle(win, (0, 0, 0), (h / 2, h / 2), h / 2, 10)
-
-    pg.draw.circle(win, (0, 0, 0), (w - h / 2, h / 2), h / 2, 10)
-
-    pg.draw.rect(win, (0, 90, 20), (h / 2, 0, w - h, h))
-
-    pg.draw.line(win, (0, 0, 0), (h / 2, 4), (w - h / 2, 4), 10)
-
-    pg.draw.line(win, (0, 0, 0), (h / 2, h - 5), (w - h / 2, h - 5), 10)
-
     while run:
+
+        win.fill((100, 100, 100))
+
+        pg.draw.circle(win, (0, 90, 20), (h / 2, h / 2), h / 2)
+
+        pg.draw.circle(win, (0, 90, 20), (w - h / 2, h / 2), h / 2)
+
+        pg.draw.circle(win, (0, 0, 0), (h / 2, h / 2), h / 2, 10)
+
+        pg.draw.circle(win, (0, 0, 0), (w - h / 2, h / 2), h / 2, 10)
+
+        pg.draw.rect(win, (0, 90, 20), (h / 2, 0, w - h, h))
+
+        pg.draw.line(win, (0, 0, 0), (h / 2, 4), (w - h / 2, 4), 10)
+
+        pg.draw.line(win, (0, 0, 0), (h / 2, h - 5), (w - h / 2, h - 5), 10)
 
         for _ in Karten:
 
@@ -939,9 +952,11 @@ def Game(HMP, SBlind, MPP):     #HowManyPlayers     MonyPerPerson
 
         for _ in range(HMP):
 
-            Chips(Pot[_], BP[_], Chip, m.radians(WIW(HMP)[1][_]))
+            Chips(Money[_]-[Raise, *len(Pot)*[0]][_], BP[_], Chip, m.radians(WIW(HMP)[1][_]))
 
-            Chips(Money[_], BP[_+HMP], Chip, m.radians(WIW(HMP)[1][_]))
+            Chips(Pot[_]+[Raise, *len(Pot)*[0]][_], BP[_+HMP], Chip, m.radians(WIW(HMP)[1][_]))
+
+        if pg.key.get_pressed()[pg.K_c]: Info(You["Cards"], deepcopy(Mitte), Karten, You["Chips"]-Raise, Raise)
 
         pg.display.flip()
 
@@ -951,39 +966,52 @@ def Game(HMP, SBlind, MPP):     #HowManyPlayers     MonyPerPerson
 
                 if event.button == 1:
 
-                    if pg.Rect(WIW(2)[0][0][0]-int(w/22.8)-10, WIW(2)[0][0][1]-int(h/8.5)-5, int(w/11.4)+20, int(h/4.25)+10).collidepoint(event.pos):
+                    if pg.Rect(Karten[You["Cards"][0]].pos[0]-int(w/45.6)-5, Karten[You["Cards"][0]].pos[1]-int(h/17)-5,
+                               int(w/11.25)+20, int(h/8.5)+10).collidepoint(event.pos):
 
                         Karten[You["Cards"][0]].open = not Karten[You["Cards"][0]].open
 
                         Karten[You["Cards"][1]].open = not Karten[You["Cards"][1]].open
 
+                x = 2
+
+                if pg.mouse.get_pressed()[1]: x = 20
+
                 if event.button == 4:
 
-                    if Mitte[0] < max(Mitte):
+                    if Raise:
 
-                        Raise = max(Mitte[1])
+                        if Raise+x < You["Chips"]: Raise += x
 
-                    elif Raise + 2 <= Player[Turn][1] + Mitte[1][Turn]:
-
-                        Raise += 2
+                        else: Raise = You["Chips"]
 
                     else:
 
-                        Raise = Player[Turn][1] + Mitte[1][Turn]
+                        if max(Pot) < Pot[0]+You["Chips"]-x:
 
-                if event.button == 5:
+                            if max(Pot) == Pot[0]: Raise += x
 
-                    if Raise - 2 >= max(Mitte[1]):
+                            else: Raise = max(Pot)-Pot[0]
 
-                        Raise -= 2
+                        else: Raise = You["Chips"]
 
-                    elif Player[Turn][1] < max(Mitte[1]):
+                        for _ in range(2): Karten[You["Cards"][_]].rotStapel(WIW(HMP)[0][0], _+1.5, 2, 10, 180)
 
-                        Raise = int((Player[Turn][1] - 1) / 2) * 2
+                if event.button == 5 and Raise:
 
-                    else:
+                    if Raise-x < max(Pot):
 
-                        Raise = max(Mitte[1]) - 2
+                        Raise = 0
+
+                        if Pot[0] < max(Pot):
+
+                            for _ in range(2):
+
+                                Karten[You["Cards"][_]].rotStapel(WIW(HMP)[0][0], 1, 2, 2, 90)
+
+                                Karten[You["Cards"][_]].pos[1] = WIW(HMP)[0][0][1]-int(h/5)
+
+                    else: Raise -= x
 
                 if event.button == 3: Enter()
 
@@ -1001,35 +1029,43 @@ def Game(HMP, SBlind, MPP):     #HowManyPlayers     MonyPerPerson
 
                 if event.key == pg.K_UP:
 
-                    if Raise < max(Mitte[1]):
+                    if Raise:
 
-                        Raise = max(Mitte[1])
+                        if Raise+2 < You["Chips"]: Raise += 2
 
-                    elif Raise + 2 <= Player[Turn][1] + Mitte[1][Turn]:
-
-                        Raise += 2
+                        else: Raise = You["Chips"]
 
                     else:
 
-                        Raise = Player[Turn][1] + Mitte[1][Turn]
+                        if max(Pot) < Pot[0]+You["Chips"]-2:
 
-                if event.key == pg.K_DOWN:
+                            if max(Pot) == Pot[0]: Raise += 2
 
-                    if Raise - 2 >= max(Mitte[1]):
+                            else: Raise = max(Pot)-Pot[0]
 
-                        Raise -= 2
+                        else: Raise = You["Chips"]
 
-                    elif Player[Turn][1] < max(Mitte[1]):
+                        for _ in range(2): Karten[You["Cards"][_]].rotStapel(WIW(HMP)[0][0], _+1.5, 2, 10, 180)
 
-                        Raise = int((Player[Turn][1] - 1) / 2) * 2
+                if event.key == pg.K_DOWN and Raise:
 
-                    else:
+                    if Raise-2 < max(Pot):
 
-                        Raise = max(Mitte[1]) - 2
+                        Raise = 0
+
+                        if Pot[0] < max(Pot):
+
+                            for _ in range(2):
+
+                                Karten[You["Cards"][_]].rotStapel(WIW(HMP)[0][0], 1, 2, 2, 90)
+
+                                Karten[You["Cards"][_]].pos[1] = WIW(HMP)[0][0][1]-int(h/5)
+
+                    else: Raise -= 2
 
                 if event.key == pg.K_RETURN: Enter()
 
-                if event.key == pg.K_BACKSPACE: Ingame.remove(You["Name"])
+                #if event.key == pg.K_BACKSPACE: Ingame.remove(You["Name"])
 
 def GameStats(Name):
 
@@ -1095,7 +1131,7 @@ def GameStats(Name):
 
                 if event.button == 4:
 
-                    if pg.Rect(Box[1]).collidepoint(event.pos): Money += x
+                    if pg.Rect(Box[1]).collidepoint(event.pos): Money += 2*x
 
                     if pg.Rect(Box[2]).collidepoint(event.pos):
 
@@ -1121,9 +1157,9 @@ def GameStats(Name):
 
                     if pg.Rect(Box[1]).collidepoint(event.pos):
 
-                        if Money - x >= 100:
+                        if Money - 2*x >= 100:
 
-                            Money -= x
+                            Money -= 2*x
 
                         else:
 
