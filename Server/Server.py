@@ -236,11 +236,13 @@ class Lobby1:
         a = 0
 
         for _ in range(len(self.globalPool['Pot'])):
+
             a += self.globalPool['Pot'][_]
 
             self.globalPool['Pot'] = 0
 
         for _ in range(len(Showdown)):
+
             self.PlayerList[Showdown[_]].localPool['Money'] += int(a / (len(Showdown) - _))
 
             Showdown -= int(a / (len(Showdown) - _))

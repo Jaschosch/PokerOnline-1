@@ -114,7 +114,7 @@ def KartenAusteilen(Cards, HMP, Mitte, Karten):
 
     return Mitte, Karten
 
-def Pay(From, To, Much):
+'''def Pay(From, To, Much):
 
     From -= Much
 
@@ -713,7 +713,7 @@ def Enter(Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlin
 
     Ingame, AllIn, Player, Mitte, Karten, SBlind, BBlind, Chip, SChip, stapel, BP, SBP, Turn, run = Test(Ingame, AllIn, Player, Mitte, Karten, SBlind, BBlind, stapel, Chip, SChip, BP, SBP, Turn, run, M)
 
-    return Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlind, Chip, SChip, BP, SBP, AllIn
+    return Karten, Player, Turn, Ingame, Mitte, Raise, run, stapel, SBlind, BBlind, Chip, SChip, BP, SBP, AllIn'''
 
 def Info(HKarten, MKarten, Karten, Chips, Raise):
 
@@ -850,9 +850,11 @@ def Pause(P, B, SBlind, BBlind, M):
 
 def Game(HMP, SBlind, MPP):     #HowManyPlayers     MonyPerPerson
 
-    #client = Client.Client(Name, ('127.0.0.1', 62435))
-    #Input = client.getServerPool()      #Mitte, Karten, Startguthaben
-    s = list(range(52))
+    client = Client.Client(Name, ('127.0.0.1', 62435))
+
+    Input = client.getServerPool()      #Mitte, Karten, Startguthaben
+
+    '''s = list(range(52))
 
     rand.shuffle(s)
 
@@ -866,7 +868,7 @@ def Game(HMP, SBlind, MPP):     #HowManyPlayers     MonyPerPerson
 
         for __ in range(2): del s[0]
 
-    #HMP = len(Input["Karten"])
+    #HMP = len(Input["Karten"])'''
 
     Karten = ['karo-2', 'karo-3', 'karo-4', 'karo-5', 'karo-6', 'karo-7', 'karo-8', 'karo-9', 'karo-10', 'karo-bube', 'karo-dame', 'karo-koenig', 'karo-ass',
               'herz-2', 'herz-3', 'herz-4', 'herz-5', 'herz-6', 'herz-7', 'herz-8', 'herz-9', 'herz-10', 'herz-bube', 'herz-dame', 'herz-koenig', 'herz-ass',
@@ -1247,11 +1249,19 @@ def GameStats(Name):
 
 def FindLobby(Name):
 
-    #client = c(Name, ('localhost', 62435))
+    client = c(Name, ('localhost', 62435))
 
-    #Ping = client.first_connection()
+    Ping = client.first_connection()
 
-    IDs, Lobbys = 0, 'dfjsiogüsidjgidjf'#client.get_lobby_list()
+    pg.time.wait(1000)
+
+    print(client.open_lobby({"name": "test0", "money": "10K", "smallBlind": "2.5t", "playerNum": 10}))
+    print(client.open_lobby({"name": "test1", "money": "10K", "smallBlind": "2.5t", "playerNum": 10}))
+    print(client.open_lobby({"name": "test2", "money": "10K", "smallBlind": "2.5t", "playerNum": 10}))
+    print(client.open_lobby({"name": "test3", "money": "10K", "smallBlind": "2.5t", "playerNum": 10}))
+    print(client.open_lobby({"name": "test4", "money": "10K", "smallBlind": "2.5t", "playerNum": 10}))
+
+    Lobbys = client.get_lobby_list()
 
     Text = ['+', *Lobbys]
 
